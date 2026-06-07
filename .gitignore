@@ -1,0 +1,24 @@
+# 根目录仅纳入复习资料；其余课件/安装包等一律忽略
+/*
+!/.gitignore
+!/README.md
+!/LICENSE
+!/*.py
+!/stats-learn/
+!/章节重点笔记/
+
+# stats-learn 构建与本地配置
+stats-learn/node_modules/
+stats-learn/dist/
+stats-learn/.env
+stats-learn/build.log
+stats-learn/public/backups/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# 课件提取中间产物（可本地重跑脚本生成）
+_提取全文/
+_slides_backup/

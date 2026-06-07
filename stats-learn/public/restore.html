@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>导入学习记录</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 32rem;
+        margin: 4rem auto;
+        padding: 0 1rem;
+        line-height: 1.6;
+      }
+      .ok {
+        color: #0a7;
+      }
+      .err {
+        color: #c33;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>导入学习记录</h1>
+    <p id="msg">正在从备份恢复…</p>
+    <script>
+      ;(async () => {
+        const el = document.getElementById('msg')
+        try {
+          const res = await fetch('/backups/latest.json')
+          if (!res.ok) throw new Error('找不到备份文件')
+          const data = await res.json()
+          if (!data.state) throw new Error('备份格式不正确')
+
+          const prev = localStorage.getItem('stats-learn-state-v1')
+          if (prev && prev.length > 200) {
+            localStorage.setItem('stats-learn-state-backup-v1', prev)
+          }
+          localStorage.setItem('stats-learn-state-v1', JSON.stringify(data.state))
+
+          if (data.streak) localStorage.setItem('stats-learn-streak-v1', data.streak)
+          if (data.tutorPrefs) {
+            localStorage.setItem(
+              'stats-learn-tutor-prefs-v2',
+              typeof data.tutorPrefs === 'string' ? data.tutorPrefs : JSON.stringify(data.tutorPrefs)
+            )
+          }
+          if (data.tutorMsgs) localStorage.setItem('stats-learn-tutor-messages-v1', data.tutorMsgs)
+
+          const kp = Object.keys(data.state.knowledgeProgress || {}).length
+          const diag = Object.keys(data.state.diagnostics || {}).length
+          el.className = 'ok'
+          el.textContent = `已导入 ${kp} 个知识点、${diag} 章摸底记录，即将跳转首页…`
+          setTimeout(() => {
+            location.href = '/'
+          }, 2000)
+        } catch (e) {
+          el.className = 'err'
+          el.textContent = '导入失败：' + (e && e.message ? e.message : String(e))
+        }
+      })()
+    </script>
+  </body>
+</html>

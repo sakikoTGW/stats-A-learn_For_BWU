@@ -1,0 +1,11 @@
+OK 01 PPT-1.1第一章绪论: 44 slides, 34 embedded
+OK 02 PPT-2.2统计调查: 25 slides, 10 embedded
+OK 03 PPT-3.1整理与显示: 36 slides, 11 embedded
+OK 04 PPT-4总量与相对指标: 31 slides, 13 embedded
+OK 05 PPT-5平均指标: 45 slides, 48 embedded
+OK 06 PPT-6标志变异指标: 37 slides, 54 embedded
+OK 07 PPT-2.2关联抽样调查: 25 slides, 10 embedded
+OK 08 PPT-8相关回归: 87 slides, 246 embedded
+OK 08 PDF-8相关回归: 87 pages
+OK 09 PDF-9时间数列: 90 pages
+OK 10 PDF-10统计指数: 62 pages
