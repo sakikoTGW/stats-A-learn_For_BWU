@@ -101,7 +101,7 @@ npm run gen:supplement            # 补全零题 KP（编辑 scripts/gen-supplem
 
 - 学习进度、摸底、错题等存在浏览器 **localStorage**（key：`stats-learn-state-v1`）
 - 设置页支持 **导出 / 导入 JSON**；`public/backups/` 仅作本地恢复，**不会**提交到 Git
-- 不同浏览器 / Cursor 内置浏览器之间 localStorage **不共享**
+- 不同浏览器之间 localStorage **不共享**
 
 ## 许可证
 
