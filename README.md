@@ -1,5 +1,7 @@
 # stats-A-learn for BWU 北京物资学院统计学A区宝宝蠕动复习
 
+BWU的统计题库他妈在哪！！！！！！！！！！！！！！！！！！！！！！！！！！！
+
 [![Node.js 18+](https://img.shields.io/badge/node-18+-green.svg)](https://nodejs.org/)
 [![React](https://img.shields.io/badge/React-19-61DAFB.svg)](https://react.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
