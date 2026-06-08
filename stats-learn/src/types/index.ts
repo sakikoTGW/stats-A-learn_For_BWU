@@ -14,6 +14,8 @@ export interface KnowledgePoint {
   title: string
   plainExplanation: string
   keyPoints: string[]
+  /** 公式/检验统计量速记（备考向） */
+  formulas?: string[]
   analogy?: string
   mnemonic?: string
   tags: string[]
@@ -122,6 +124,8 @@ export interface TutorMessage {
   createdAt: string
 }
 
+import type { FinalExamAttemptRecord } from './finalExam'
+
 export interface AppState {
   knowledgeProgress: Record<string, KnowledgeProgress>
   questionAttempts: QuestionAttempt[]
@@ -131,6 +135,8 @@ export interface AppState {
   customQuestions: Question[]
   studyNotes: StudyNote[]
   diagnostics: Record<string, DiagnosticResult>
+  /** 期末模拟卷最近一次交卷记录，key=paperId 如 final-a */
+  finalExamAttempts: Record<string, FinalExamAttemptRecord>
   settings: {
     dailyGoalMinutes: number
     studyIntensity?: StudyIntensity

@@ -1,6 +1,9 @@
 import type { Question } from '../types'
 import { homeworkQuestions } from './homeworkQuestions'
 import { supplementQuestions } from './supplementQuestions'
+import { ch78910Questions } from './ch78910Questions'
+import { kpDrillQuestions } from './kpDrillQuestions'
+import { docExerciseQuestions } from './docExerciseQuestions'
 
 const coreQuestions: Question[] = [
   // ========== 第一章 统计和统计学 ==========
@@ -1673,7 +1676,7 @@ const coreQuestions: Question[] = [
   },
 ]
 
-/** 核心题库 + 笔记课后题 + 补全题（去重 id） */
+/** 核心题库 + 笔记课后题 + 补全题 + 7–10章深度题（去重 id） */
 export const builtinQuestions: Question[] = [
   ...coreQuestions,
   ...homeworkQuestions.filter((h) => !coreQuestions.some((c) => c.id === h.id)),
@@ -1681,5 +1684,26 @@ export const builtinQuestions: Question[] = [
     (s) =>
       !coreQuestions.some((c) => c.id === s.id) &&
       !homeworkQuestions.some((h) => h.id === s.id)
+  ),
+  ...ch78910Questions.filter(
+    (d) =>
+      !coreQuestions.some((c) => c.id === d.id) &&
+      !homeworkQuestions.some((h) => h.id === d.id) &&
+      !supplementQuestions.some((s) => s.id === d.id)
+  ),
+  ...kpDrillQuestions.filter(
+    (d) =>
+      !coreQuestions.some((c) => c.id === d.id) &&
+      !homeworkQuestions.some((h) => h.id === d.id) &&
+      !supplementQuestions.some((s) => s.id === d.id) &&
+      !ch78910Questions.some((c) => c.id === d.id)
+  ),
+  ...docExerciseQuestions.filter(
+    (d) =>
+      !coreQuestions.some((c) => c.id === d.id) &&
+      !homeworkQuestions.some((h) => h.id === d.id) &&
+      !supplementQuestions.some((s) => s.id === d.id) &&
+      !ch78910Questions.some((c) => c.id === d.id) &&
+      !kpDrillQuestions.some((k) => k.id === d.id)
   ),
 ]

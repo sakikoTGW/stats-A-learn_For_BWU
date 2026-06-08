@@ -65,37 +65,128 @@ export function getHomeworkTableSnippet(chapterId: string): string {
   return m[1].trim().slice(0, 1200)
 }
 
-/** 按知识点标题在笔记中找最相关的 ## 小节 */
+/** KP → 笔记 ## 小节关键词（提高匹配命中率） */
+const KP_NOTE_HINTS: Record<string, string[]> = {
+  'kp5-2': ['算术平均', '加权'],
+  'kp5-3': ['调和平均', 'H'],
+  'kp5-4': ['几何平均', 'G', '比率'],
+  'kp5-5': ['中位数', 'Me'],
+  'kp5-6': ['几何平均', 'G', '发展速度'],
+  'kp5-7': ['中位数', 'Me'],
+  'kp5-8': ['众数', 'Mo'],
+  'kp5-9': ['算术', '中位数', '众数'],
+  'kp5-10': ['Excel', 'AVERAGE'],
+  'kp5-11': ['四分位数', 'Q_1', 'Q_3'],
+  'kp5-12': ['平移', '缩放'],
+  'kp5-13': ['五种平均', '选用'],
+  'kp5-14': ['结构变化', '总平均'],
+  'kp7-1': ['抽样推断', '概述'],
+  'kp7-2': ['抽样平均误差', '允许误差', 'μ'],
+  'kp7-3': ['抽样分布', 't 分布', '正态'],
+  'kp7-4': ['参数估计', '区间估计', '点估计'],
+  'kp7-5': ['假设检验', 't 检验', 'Z 检验', 'P 值'],
+  'kp7-6': ['样本容量'],
+  'kp7-7': ['重置', '不重置', '放回'],
+  'kp7-8': ['无偏', '有效', '一致', '优良性'],
+  'kp7-9': ['两类错误', 'α', 'β'],
+  'kp7-10': ['成数', '区间估计'],
+  'kp7-11': ['参数', '统计量'],
+  'kp8-1': ['函数关系', '相关关系'],
+  'kp8-2': ['Pearson', '相关系数', 't 检验', 'ρ'],
+  'kp8-3': ['一元线性回归', '最小二乘', 'ŷ=a+bx'],
+  'kp8-4': ['R²', '判定系数', '估计标准误', '拟合优度'],
+  'kp8-5': ['t 检验', 'F 检验', 'F 统计量', '回归'],
+  'kp8-6': ['Excel', 'CORREL', '易混'],
+  'kp8-7': ['SST', 'SSR', 'SSE', '自由度'],
+  'kp8-8': ['相关类型', '复相关'],
+  'kp8-9': ['非线性回归'],
+  'kp8-10': ['相关分析', '回归分析', '区别'],
+  'kp8-11': ['相关分析步骤'],
+  'kp8-12': ['多元线性回归', 'F 检验'],
+  'kp8-13': ['预测', '单向'],
+  'kp9-1': ['环比', '定基', '发展速度'],
+  'kp9-2': ['季节指数', '调整系数', '400%'],
+  'kp9-3': ['移动平均', '长期趋势', '最小二乘'],
+  'kp9-4': ['季节变动', '趋势剔除', '实际÷趋势'],
+  'kp9-5': ['序时平均', '增长量', '水平分析'],
+  'kp9-6': ['时间数列', '可比性', '基础'],
+  'kp9-7': ['增长1%', '绝对值'],
+  'kp9-8': ['循环', '不规则', 'T×S×C×I'],
+  'kp9-9': ['偶数项', '移动平均'],
+  'kp9-10': ['平均发展速度', '几何平均'],
+  'kp9-11': ['时距扩大'],
+  'kp9-12': ['ARMA', 'MA', '自相关'],
+  'kp9-13': ['发展水平', '平均增长量'],
+  'kp9-14': ['直线趋势', 'a+bt', '最小二乘'],
+  'kp10-1': ['拉氏', '派氏'],
+  'kp10-2': ['指数数列', '基期更换'],
+  'kp10-3': ['CPI', '指数调整'],
+  'kp10-4': ['指数体系', '因素分析'],
+  'kp10-5': ['优良性', '颠倒测试'],
+  'kp10-6': ['易混', '双10%'],
+  'kp10-7': ['个体指数'],
+  'kp10-8': ['平均指数', '算术', '调和'],
+  'kp10-9': ['股票指数'],
+  'kp10-10': ['理想指数', '马艾'],
+  'kp10-11': ['统计指数', '概念'],
+  'kp10-12': ['同度量因素'],
+}
+
+/** 按 ## 大节匹配笔记（含其下 ### 全文，避免只剩标题） */
 export function getKpSectionFromUserMd(chapterId: string, kpId: string): string {
   const md = getUserChapterMarkdown(chapterId)?.markdown
   const kp = knowledgePoints.find((k) => k.id === kpId)
   if (!md || !kp) return ''
 
-  const sections = md.split(/(?=^##\s)/m).filter((s) => s.trim())
+  const rawParts = md.split(/^##\s+/m)
+  // 首段是 # 章标题 + 导语，不是 ## 小节
+  const sections = rawParts
+    .slice(1)
+    .filter((s) => s.trim())
+    .map((block) => {
+      const nl = block.indexOf('\n')
+      const head = (nl >= 0 ? block.slice(0, nl) : block).trim()
+      const body = nl >= 0 ? block.slice(nl + 1).trim() : ''
+      return { head, text: `## ${head}\n\n${body}`.trim() }
+    })
+
   const title = kp.title.replace(/（.*?）/g, '').trim()
+  const hints = KP_NOTE_HINTS[kpId] ?? []
+
+  const SKIP_HEAD =
+    /配套课件|自测|习题逐题精讲|本章知识导图|本章知识点树|本章在干什么|先读：|挖漏|全书知识点/
 
   let best = ''
   let bestScore = 0
-  for (const sec of sections) {
-    const head = sec.match(/^##\s+(.+)/)?.[1] ?? ''
+  for (const { head, text } of sections) {
+    if (SKIP_HEAD.test(head) || head.startsWith('#')) continue
+
     let score = 0
-    if (head.includes(title) || title.includes(head.replace(/^[一二三四五六七八九十]+[、．.]?\s*/, ''))) {
-      score += 10
+    const headPlain = head.replace(/^[一二三四五六七八九十]+[、．.]?\s*/, '')
+    if (head.includes(title) || title.includes(headPlain) || headPlain.includes(title)) {
+      score += 12
+    }
+    for (const hint of hints) {
+      if (head.includes(hint) || text.includes(hint)) score += 4
     }
     for (const tag of kp.tags) {
-      if (sec.includes(tag)) score += 2
+      if (text.includes(tag)) score += 2
     }
-    for (const kw of title.split(/[/、\s]/).filter((w) => w.length >= 2)) {
-      if (sec.includes(kw)) score += 1
+    for (const kw of title.split(/[/、\s·]/).filter((w) => w.length >= 2)) {
+      if (head.includes(kw) || text.includes(kw)) score += 1
     }
+    if (text.length > 80) score += 3
+    if (text.length > 400) score += 2
+
     if (score > bestScore) {
       bestScore = score
-      best = sec.trim()
+      best = text
     }
   }
 
-  if (!best) return ''
-  return best.length > 900 ? `${best.slice(0, 900)}…` : best
+  if (bestScore < 3) return ''
+  if (/^##\s*#/.test(best) || /^#\s+第/.test(best)) return ''
+  return best.length > 4800 ? `${best.slice(0, 4800)}…` : best
 }
 
 export function getChapterIntroFromUserMd(chapterId: string): string {

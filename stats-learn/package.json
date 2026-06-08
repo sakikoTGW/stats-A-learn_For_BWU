@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "gen:supplement": "node scripts/gen-supplement.mjs"
+    "gen:supplement": "node scripts/gen-supplement.mjs",
+    "gen:drill": "node scripts/gen-kp-drill.mjs",
+    "gen:doc-hw": "node scripts/gen-doc-homework.mjs",
+    "gen:final-exam": "node scripts/gen-final-exams.mjs"
   },
   "dependencies": {
     "dompurify": "^3.4.8",

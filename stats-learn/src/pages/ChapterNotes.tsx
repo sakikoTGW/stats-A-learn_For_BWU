@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { chapters } from '../data/chapters'
+import { chapters, knowledgePoints } from '../data/chapters'
 import { chapterNotes } from '../data/chapterNotes'
 import {
   getBookKnowledgeTreeMd,
   getChapterExerciseMd,
   getGapChecklistMd,
   getHomeworkTableSnippet,
+  getKpSectionFromUserMd,
   getUserChapterMarkdown,
 } from '../data/userChapterMarkdown'
 import { MarkdownView } from '../components/MarkdownView'
+import { countQuestionsForKp } from '../services/questionStats'
 
 type NoteView = 'full' | 'brief' | 'tree' | 'gap' | 'exercises'
 
@@ -165,18 +167,65 @@ export function ChapterNotes() {
   )
 }
 
-/** 供学习页内嵌的 KP 笔记片段 */
+/** 供学习页内嵌：笔记原文 + 要点速记 + 刷题入口 */
 export function KpNoteAside({ chapterId, kpId }: { chapterId: string; kpId: string }) {
-  const entry = chapterNotes.find((c) => c.chapterId === chapterId)
-  const block = entry?.blocks.find((b) => b.kpId === kpId)
-  if (!block) return null
+  const kp = knowledgePoints.find((k) => k.id === kpId)
+  const fromMd = getKpSectionFromUserMd(chapterId, kpId)
+  const block = chapterNotes.find((c) => c.chapterId === chapterId)?.blocks.find((b) => b.kpId === kpId)
+  const qCount = countQuestionsForKp(kpId)
+
+  if (!kp) return null
+
   return (
-    <div className="plain-box chapter-note-aside">
-      <strong>📎 章节重点（笔记摘录）</strong>
-      <p>{block.content}</p>
-      <Link to={`/chapter-notes?chapter=${chapterId}`} className="btn-ghost btn-sm">
-        查看完整章节笔记
-      </Link>
+    <div className="kp-drill-stack">
+      {fromMd ? (
+        <div className="plain-box chapter-note-aside kp-note-md">
+          <strong>📖 章节重点（笔记原文）</strong>
+          <MarkdownView markdown={fromMd} compact />
+        </div>
+      ) : block ? (
+        <div className="plain-box chapter-note-aside">
+          <strong>📎 章节重点（提要）</strong>
+          <p>{block.content}</p>
+        </div>
+      ) : null}
+
+      <div className="plain-box kp-drill-card">
+        <strong>🔥 往死里复习 · 本题点</strong>
+        {kp.formulas && kp.formulas.length > 0 && (
+          <div className="formula-strip">
+            {kp.formulas.map((f) => (
+              <code key={f}>{f}</code>
+            ))}
+          </div>
+        )}
+        <ul className="drill-keypoints">
+          {kp.keyPoints.map((p) => (
+            <li key={p}>{p}</li>
+          ))}
+        </ul>
+        {kp.tags.length > 0 && (
+          <div className="tag-row">
+            {kp.tags.map((t) => (
+              <span key={t} className="chip tag-chip">
+                {t}
+              </span>
+            ))}
+          </div>
+        )}
+        <p className="kp-q-meta">
+          本题点题库 <strong>{qCount}</strong> 道
+          {qCount < 5 && ' · 建议多刷几遍 + 对照上方笔记'}
+        </p>
+        <div className="row-actions kp-drill-actions">
+          <Link to={`/practice?chapter=${chapterId}&kp=${kpId}`} className="btn-primary btn-sm">
+            只刷这个知识点
+          </Link>
+          <Link to={`/chapter-notes?chapter=${chapterId}`} className="btn-ghost btn-sm">
+            完整章节笔记
+          </Link>
+        </div>
+      </div>
     </div>
   )
 }

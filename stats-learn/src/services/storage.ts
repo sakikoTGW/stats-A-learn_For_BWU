@@ -12,6 +12,7 @@ const defaultState = (): AppState => ({
   customQuestions: [],
   studyNotes: [],
   diagnostics: {},
+  finalExamAttempts: {},
   settings: { dailyGoalMinutes: 30, studyIntensity: 'standard' },
 })
 
@@ -34,6 +35,7 @@ function normalizeParsed(parsed: Partial<AppState>): AppState {
     settings: { ...defaultState().settings, ...parsed.settings },
     studyNotes: parsed.studyNotes ?? [],
     diagnostics: parsed.diagnostics ?? {},
+    finalExamAttempts: parsed.finalExamAttempts ?? {},
   }
 }
 
@@ -120,6 +122,7 @@ export function importStateJson(json: string, mode: 'replace' | 'merge' = 'repla
     customQuestions: [...current.customQuestions, ...incoming.customQuestions],
     studyNotes: [...incoming.studyNotes, ...current.studyNotes],
     diagnostics: { ...current.diagnostics, ...incoming.diagnostics },
+    finalExamAttempts: { ...current.finalExamAttempts, ...incoming.finalExamAttempts },
     settings: { ...current.settings, ...incoming.settings },
     lastChapterId: incoming.lastChapterId ?? current.lastChapterId,
     lastActiveDate: incoming.lastActiveDate ?? current.lastActiveDate,

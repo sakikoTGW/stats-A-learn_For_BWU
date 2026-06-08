@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
 import { MermaidBlock } from './MermaidBlock'
+import { preprocessNotesMarkdown } from '../utils/notesMarkdown'
 
 const CHAPTER_MD_TO_ID: Record<string, string> = {
   '第01章-统计和统计学.md': 'ch1',
@@ -147,7 +148,7 @@ export function MarkdownView({
   className?: string
   compact?: boolean
 }) {
-  const segments = useMemo(() => splitMarkdown(markdown), [markdown])
+  const segments = useMemo(() => splitMarkdown(preprocessNotesMarkdown(markdown)), [markdown])
 
   return (
     <div className={`markdown-body ${compact ? 'markdown-body-compact' : ''} ${className}`.trim()}>

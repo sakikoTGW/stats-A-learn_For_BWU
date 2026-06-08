@@ -15,6 +15,12 @@ import { Settings } from './pages/Settings'
 import { ChapterExam } from './pages/ChapterExam'
 import { ReviewRetest } from './pages/ReviewRetest'
 import { ChapterNotes } from './pages/ChapterNotes'
+import { KpTreeReview } from './pages/KpTreeReview'
+import { DocHomework } from './pages/DocHomework'
+import { FinalExamList } from './pages/FinalExamList'
+import { FinalExamTake } from './pages/FinalExamTake'
+import { FinalExamReview } from './pages/FinalExamReview'
+import { FinalExamView } from './pages/FinalExamView'
 
 export default function App() {
   return (
@@ -33,6 +39,12 @@ export default function App() {
               <Route path="wrong-book" element={<WrongBook />} />
               <Route path="notes" element={<Notes />} />
               <Route path="chapter-notes" element={<ChapterNotes />} />
+              <Route path="kp-review" element={<KpTreeReview />} />
+              <Route path="doc-homework" element={<DocHomework />} />
+              <Route path="final-exam" element={<FinalExamList />} />
+              <Route path="final-exam/:paperId/review" element={<FinalExamReview />} />
+              <Route path="final-exam/:paperId/view" element={<FinalExamView />} />
+              <Route path="final-exam/:paperId" element={<FinalExamTake />} />
               <Route path="summary" element={<Summary />} />
               <Route path="diagnostic/:chapterId" element={<Diagnostic />} />
             </Route>

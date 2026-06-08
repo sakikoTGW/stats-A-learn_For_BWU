@@ -981,6 +981,7 @@ export const knowledgePoints: KnowledgePoint[] = [
       '均值 σ未知→t(n−1)',
       '与置信区间对偶',
     ],
+    formulas: ['t=(x̄−μ0)/(s/√n)', 'Z=(x̄−μ0)/(σ/√n)', 'p<α ⇒ 拒绝 H0'],
     tags: ['假设检验', 't检验', 'Z检验', 'P值', 'α', 'β'],
   },
   {
@@ -1038,6 +1039,7 @@ export const knowledgePoints: KnowledgePoint[] = [
     plainExplanation:
       'r 衡量线性相关，r∈[-1,1]。是否相关不能只看 r 大小，要做检验：H0:ρ=0，t=r√(n−2)/√(1−r²)～t(n−2)，p<α 则存在线性相关。',
     keyPoints: ['r∈[-1,1]', 'H0:ρ=0', 't=r√(n−2)/√(1−r²)', '须检验不能只看r'],
+    formulas: ['r∈[−1,1]', 't=r√(n−2)/√(1−r²)', 'H0: ρ=0', '一元 R²=r²'],
     tags: ['相关系数', 't检验', 'Pearson'],
   },
   {
@@ -1071,6 +1073,7 @@ export const knowledgePoints: KnowledgePoint[] = [
       '多元整体 F、单个 t',
       'SSE 自由度 n−2',
     ],
+    formulas: ['F=MSR/MSE', '一元: F=t²', 't=b/Sb', 'MSE=SSE/(n−2)'],
     tags: ['t检验', 'F检验', 'F统计量', 'MSR', 'MSE'],
   },
   {
@@ -1080,6 +1083,7 @@ export const knowledgePoints: KnowledgePoint[] = [
     plainExplanation:
       'SST=SSR+SSE。R²=SSR/SST。估计标准误 Sy=√(SSE/(n−2))。一元 SSE 自由度 n−2；多元 SSR 自由度 p，SSE 自由度 n−p−1。这是算 F 检验的基础。',
     keyPoints: ['SST=SSR+SSE', 'R²=SSR/SST', 'Sy=√MSE', 'SSR 自由度 p', 'SSE 自由度 n−p−1'],
+    formulas: ['SST=SSR+SSE', 'R²=SSR/SST', 'Sy=√(SSE/(n−2))'],
     tags: ['SST', 'SSR', 'SSE', '自由度'],
   },
   {
@@ -1154,6 +1158,7 @@ export const knowledgePoints: KnowledgePoint[] = [
     plainExplanation:
       '环比=报告期/上期；定基=报告期/基期。定基发展速度=各期环比连乘；定基增长速度≠环比增长速度连乘。',
     keyPoints: ['环比连乘=定基', '平均发展速度用几何平均', '易混增长速度连乘'],
+    formulas: ['环比=报告期/上期', '定基=报告期/基期', '定基速度=环比连乘'],
     tags: ['环比', '定基', '发展速度'],
   },
   {
@@ -1173,6 +1178,7 @@ export const knowledgePoints: KnowledgePoint[] = [
     plainExplanation:
       'n 项移动平均修匀数列，首尾各少 (n−1)/2 项。配合最小二乘、时距扩大法测定长期趋势；直线 ŷ=a+bt 中 b 为每年平均增减量。',
     keyPoints: ['三项平均少1项', 'b 是斜率非截距', '移动平均·最小二乘'],
+    formulas: ['n项平均首尾各少(n−1)/2项', 'ŷ=a+bt，b=年均增减量'],
     tags: ['移动平均', '长期趋势'],
   },
   {
@@ -1182,6 +1188,7 @@ export const knowledgePoints: KnowledgePoint[] = [
     plainExplanation:
       '趋势剔除法：实际值÷趋势值得季节比率/指数；需多年分月（季）资料。季节指数之和可调整为 400%（月度 1200%）。',
     keyPoints: ['实际÷趋势', 'ACD 条件', '季节指数400%'],
+    formulas: ['季节比率=实际值÷趋势值', 'k=400%/Σ季节指数'],
     mnemonic: '除趋势，看季节。',
     tags: ['季节变动', '趋势剔除'],
   },
@@ -1228,6 +1235,7 @@ export const knowledgePoints: KnowledgePoint[] = [
     plainExplanation:
       '增长1%绝对值=逐期增长量/(环比增长速度×100)=前期水平/100。说明每增长1%对应的绝对数量，用于把速度还原为绝对规模。',
     keyPoints: ['=前期水平/100', '连接速度与绝对量', '易与增长量混淆'],
+    formulas: ['增长1%绝对值=前期水平/100'],
     tags: ['增长1%绝对值'],
   },
   {

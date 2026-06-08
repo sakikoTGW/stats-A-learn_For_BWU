@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 
 import { chapters } from '../data/chapters'
+import { knowledgePoints } from '../data/chapters'
 
 import { builtinQuestions } from '../data/questions'
 
@@ -53,6 +54,9 @@ export function Practice() {
 
   const flowMode = params.get('flow') === 'today'
   const wrongOnly = params.get('wrongOnly') === '1'
+  const docHwSet = params.get('set') === 'doc-hw'
+  const chapterParam = params.get('chapter') ?? 'ch1'
+  const docHwAll = docHwSet && chapterParam === 'all'
   const flowLimitParam = flowMode ? Number(params.get('limit') || 0) : null
 
 
@@ -63,7 +67,13 @@ export function Practice() {
 
   const { showToast } = useToast()
 
-  const [chapterId, setChapterId] = useState(params.get('chapter') ?? 'ch1')
+  const [chapterId, setChapterId] = useState(docHwAll ? 'all' : chapterParam)
+  const kpFilter = params.get('kp') ?? ''
+
+  useEffect(() => {
+    const ch = params.get('chapter') ?? 'ch1'
+    setChapterId(docHwSet && ch === 'all' ? 'all' : ch)
+  }, [params, docHwSet])
 
   const [difficulty, setDifficulty] = useState<'all' | 'easy' | 'medium' | 'hard'>('all')
 
@@ -111,13 +121,24 @@ export function Practice() {
 
     let list = all.filter((q) => {
 
-      if (q.chapterId !== chapterId) return false
+      if (docHwSet && !q.id.startsWith('doc-')) return false
+
+      if (!docHwAll && q.chapterId !== chapterId) return false
+
+      if (kpFilter && !q.knowledgePointIds.includes(kpFilter)) return false
 
       if (difficulty !== 'all' && q.difficulty !== difficulty) return false
 
       return true
 
     })
+
+    if (docHwAll) {
+      const order = ['ch1', 'ch2', 'ch3', 'ch4', 'ch5', 'ch6', 'ch7', 'ch8', 'ch9', 'ch10']
+      list = [...list].sort(
+        (a, b) => order.indexOf(a.chapterId) - order.indexOf(b.chapterId) || a.id.localeCompare(b.id)
+      )
+    }
 
     if (wrongOnly) {
 
@@ -130,7 +151,7 @@ export function Practice() {
 
     return list
 
-  }, [chapterId, difficulty, state.customQuestions, extra, wrongOnly, state.wrongQuestionIds, flowPoolSize])
+  }, [chapterId, docHwAll, docHwSet, kpFilter, difficulty, state.customQuestions, extra, wrongOnly, state.wrongQuestionIds, flowPoolSize])
 
 
 
@@ -346,11 +367,11 @@ export function Practice() {
 
         <div className="card empty-state">
 
-          <p>{wrongOnly ? '该章暂无错题，去别的章看看' : '该筛选下暂无题目'}</p>
+          <p>{wrongOnly ? '该章暂无错题，去别的章看看' : docHwSet ? '暂无课后习题，请从「课后习题」页进入' : '该筛选下暂无题目'}</p>
 
           <p className="empty-next">
 
-            下一步：{wrongOnly ? <Link to="/practice">正常刷题</Link> : <Link to="/">开始今日学习</Link>}
+            下一步：{wrongOnly ? <Link to="/practice">正常刷题</Link> : docHwSet ? <Link to="/doc-homework">课后习题列表</Link> : <Link to="/">开始今日学习</Link>}
 
           </p>
 
@@ -370,14 +391,25 @@ export function Practice() {
 
       {flowMode && flow?.active && <TodayFlowStepper session={flow} onSkip={handleSkipFlow} />}
 
+      {docHwSet && (
+        <div className="plain-box doc-hw-banner">
+          <strong>📋 课后习题模式</strong>
+          <span className="muted">
+            {docHwAll ? '全部章节' : chapters.find((c) => c.id === chapterId)?.title} · 共 {pool.length} 题
+          </span>
+          <Link to="/doc-homework">换章 / 列表</Link>
+        </div>
+      )}
+
       <div className="page-header">
 
-        <h2>{wrongOnly ? '只刷错题' : '刷题'}</h2>
+        <h2>{wrongOnly ? '只刷错题' : docHwSet ? '课后习题' : '刷题'}</h2>
 
         {!flowMode && (
 
           <div className="filters">
 
+            {!docHwAll && (
             <select value={chapterId} onChange={(e) => setChapterId(e.target.value)}>
 
               {chapters.map((c) => (
@@ -387,7 +419,9 @@ export function Practice() {
               ))}
 
             </select>
+            )}
 
+            {!docHwSet && (
             <select value={difficulty} onChange={(e) => setDifficulty(e.target.value as typeof difficulty)}>
 
               <option value="all">全部难度</option>
@@ -399,12 +433,28 @@ export function Practice() {
               <option value="hard">困难</option>
 
             </select>
+            )}
 
           </div>
 
         )}
 
       </div>
+
+      {kpFilter && !flowMode && (
+        <div className="card banner-info">
+          <p>
+            只刷知识点：<strong>{knowledgePoints.find((k) => k.id === kpFilter)?.title ?? kpFilter}</strong>
+            （{pool.length} 道题）
+          </p>
+          <Link to={`/practice?chapter=${chapterId}`} className="btn-ghost btn-sm">
+            取消筛选 · 刷全章
+          </Link>
+          <Link to={`/learn?chapter=${chapterId}&kp=${kpFilter}`} className="btn-ghost btn-sm">
+            回学习页
+          </Link>
+        </div>
+      )}
 
       <QuestionKeyboardHint phase={showResult ? 'result' : 'answer'} />
 

@@ -9,8 +9,11 @@ import { FlowResumeBanner } from './FlowResumeBanner'
 
 const nav = [
   { to: '/', label: '今日计划', icon: '📅' },
+  { to: '/kp-review', label: '知识点树', icon: '🌳' },
   { to: '/learn', label: '学习', icon: '📖' },
   { to: '/chapter-notes', label: '章节重点', icon: '📌' },
+  { to: '/doc-homework', label: '课后习题', icon: '📋' },
+  { to: '/final-exam', label: '期末模拟', icon: '📝' },
   { to: '/practice', label: '刷题', icon: '✏️' },
   { to: '/review', label: '复习', icon: '🔄' },
   { to: '/wrong-book', label: '错题', icon: '📕' },

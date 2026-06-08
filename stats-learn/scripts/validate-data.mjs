@@ -10,7 +10,11 @@ const chapters = fs.readFileSync(path.join(root, 'src/data/chapters.ts'), 'utf8'
 const questions = fs.readFileSync(path.join(root, 'src/data/questions.ts'), 'utf8')
 const homework = fs.readFileSync(path.join(root, 'src/data/homeworkQuestions.ts'), 'utf8')
 const supPath = path.join(root, 'src/data/supplementQuestions.ts')
+const deepPath = path.join(root, 'src/data/ch78910Questions.ts')
+const drillPath = path.join(root, 'src/data/kpDrillQuestions.ts')
 const supplement = fs.existsSync(supPath) ? fs.readFileSync(supPath, 'utf8') : ''
+const deepCh78910 = fs.existsSync(deepPath) ? fs.readFileSync(deepPath, 'utf8') : ''
+const kpDrill = fs.existsSync(drillPath) ? fs.readFileSync(drillPath, 'utf8') : ''
 
 const kps = [...chapters.matchAll(/id: '(kp[^']+)'/g)].map((m) => m[1])
 const kpSet = new Set(kps)
@@ -18,7 +22,7 @@ const chIds = [...chapters.matchAll(/id: '(ch\d+)'/g)].map((m) => m[1])
 const chSet = new Set(chIds)
 
 let errors = 0
-const allQ = questions + homework + supplement
+const allQ = questions + homework + supplement + deepCh78910 + kpDrill
 
 for (const m of allQ.matchAll(/knowledgePointIds: (\[[^\]]+\])/g)) {
   const ids = JSON.parse(m[1].replace(/'/g, '"'))
